@@ -1,4 +1,6 @@
 import {createCard} from "./index.js";
+import {deleteCard} from "./index.js";
+import {updateCardList} from "./index.js";
 
 const initialCards = [
     {
@@ -28,9 +30,11 @@ const initialCards = [
 ]
 
 function fillCards() {
+    const cards = [];
     initialCards.forEach(card => {
-        createCard(card.name, card.link);
+        cards.push(createCard(card.name, card.link, deleteCard));
     });
+    updateCardList(cards); 
 }
 
 fillCards();
