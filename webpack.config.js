@@ -5,7 +5,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin'); // подклю�
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // module.exports — это синтаксис экспорта в Node.js
 module.exports = {
-    entry: { main: './scripts/index.js' }, // Точка входа
+    entry: { main: './src/scripts/index.js' }, // Точка входа
     output: { // указали, в какой файл будет собираться весь js, и дали ему имя 
         path: path.resolve(__dirname, 'dist'),
         filename: 'main.js',
@@ -52,7 +52,7 @@ module.exports = {
     // добавьте массив плагинов
     plugins: [
         new HtmlWebpackPlugin({
-            template: './index.html' // путь к файлу index.html
+            template: './src/index.html' // путь к файлу index.html
         }),
         new CleanWebpackPlugin(), // плагин удаляющий папку сборки перед сборкой
         new MiniCssExtractPlugin() // подключение плагина для объединения файлов
