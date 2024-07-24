@@ -1,4 +1,5 @@
 import {initialCards} from "./cards.js";
+import {openModal} from "./modal.js";
 import '../pages/index.css';
 
 const cardTemplate = document.querySelector('#card-template').content;
@@ -11,19 +12,24 @@ const editPopup = document.querySelector('.popup_type_edit');
 const newCardPopup = document.querySelector('.popup_type_new-card');
 const imagePopup = document.querySelector('.popup_type_image');
 
-editButton.addEventListener('click', (e) => {
-    openModal(editPopup)
-    const closeButton = editPopup.querySelector('.popup__close');
-    closeButton.addEventListener('click', closeModal);
-    // closeButton.removeEventListener('click', closeModal);
+placesList.addEventListener('click', e => {
+   if (e.target.classList.contains('card__image')){
+       const image = imagePopup.querySelector('.popup__image');
+       image.src = e.target.src;
+       image.alt = e.target.alt;
+       const parent = e.target.parentElement;
+       const parentTitle = parent.querySelector('.card__title');
+       const title = imagePopup.querySelector('.popup__caption')
+       title.textContent = parentTitle.textContent;
+       openModal(imagePopup);
+   } 
 });
-plusButton.addEventListener('click', (e) => openModal(newCardPopup))
+editButton.addEventListener('click', () => openModal(editPopup));
+plusButton.addEventListener('click', () => openModal(newCardPopup));
 
 function createCard(card, deleteCardFunction) {
     const templClone = cardTemplate.querySelector('.card').cloneNode(true);
     const delButton = templClone.querySelector('.card__delete-button');
-
-    delButton.addEventListener('click', evt => deleteCardFunction(evt));
 
     const tTitle = templClone.querySelector('.card__title');
     tTitle.textContent = card.name;
@@ -32,11 +38,12 @@ function createCard(card, deleteCardFunction) {
     tImg.src = card.link;
     tImg.alt = card.alt;
 
+    delButton.addEventListener('click', evt => deleteCardFunction(templClone));
+
     return templClone;
 }
 
-function deleteCard(evt) {
-    const card = evt.target.parentElement;
+function deleteCard(card) {
     placesList.removeChild(card);
 }
 
@@ -55,11 +62,3 @@ function updateCardList(cards) {
 }
 
 loadCards();
-
-function openModal(window) {
-    window.classList.add('popup_is-opened');
-}
-
-function closeModal(window) {
-    window.classList.remove('popup_is-opened');
-}
