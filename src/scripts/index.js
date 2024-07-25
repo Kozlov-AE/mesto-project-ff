@@ -12,35 +12,33 @@ const editPopup = document.querySelector('.popup_type_edit');
 const newCardPopup = document.querySelector('.popup_type_new-card');
 const imagePopup = document.querySelector('.popup_type_image');
 
-placesList.addEventListener('click', e => {
-   if (e.target.classList.contains('card__image')){
-       const image = imagePopup.querySelector('.popup__image');
-       image.src = e.target.src;
-       image.alt = e.target.alt;
-       const parent = e.target.parentElement;
-       const parentTitle = parent.querySelector('.card__title');
-       const title = imagePopup.querySelector('.popup__caption')
-       title.textContent = parentTitle.textContent;
-       openModal(imagePopup);
-   } 
-});
 editButton.addEventListener('click', () => openModal(editPopup));
 plusButton.addEventListener('click', () => openModal(newCardPopup));
 
-function createCard(card, deleteCardFunction) {
-    const templClone = cardTemplate.querySelector('.card').cloneNode(true);
-    const delButton = templClone.querySelector('.card__delete-button');
+function showCard(link, alt, title) {
+    const image = imagePopup.querySelector('.popup__image');
+    const pTitle = imagePopup.querySelector('.popup__caption')
+    image.src = link;
+    image.alt = alt;
+    pTitle.textContent = title;
+    openModal(imagePopup);
+}
 
-    const tTitle = templClone.querySelector('.card__title');
+function createCard(card, deleteCardFunction, openPopup, likeCard) {
+    const newCard = cardTemplate.querySelector('.card').cloneNode(true);
+    const delButton = newCard.querySelector('.card__delete-button');
+
+    const tTitle = newCard.querySelector('.card__title');
     tTitle.textContent = card.name;
 
-    const tImg = templClone.querySelector('.card__image');
+    const tImg = newCard.querySelector('.card__image');
     tImg.src = card.link;
     tImg.alt = card.alt;
 
-    delButton.addEventListener('click', evt => deleteCardFunction(templClone));
+    delButton.addEventListener('click', evt => deleteCardFunction(newCard));
+    tImg.addEventListener('click', () => openPopup(card.link, card.alt, card.name));
 
-    return templClone;
+    return newCard;
 }
 
 function deleteCard(card) {
@@ -50,7 +48,7 @@ function deleteCard(card) {
 function loadCards() {
     const cards = [];
     initialCards.forEach(card => {
-        cards.push(createCard(card, deleteCard));
+        cards.push(createCard(card, deleteCard, showCard));
     })
     updateCardList(cards);
 }
