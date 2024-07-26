@@ -13,7 +13,7 @@ const newCardPopup = document.querySelector('.popup_type_new-card');
 const imagePopup = document.querySelector('.popup_type_image');
 
 const editProfileForm = document.forms["edit-profile"]; 
-const newCardForm = document.forms["new-card"];
+const newCardForm = document.forms["new-place"];
 
 const profile = document.querySelector('.profile');
 
@@ -80,15 +80,17 @@ function editProfile(event) {
 
 function addCard(event) {
     event.preventDefault();
-    
+
     const newCard = {
-        name: newCardForm.name.value,
+        name: newCardForm["place-name"].value,
         link: newCardForm.link.value,
-    }
-    newCardForm.name.value = '';
+        alt: `На карточке изображен ${newCardForm["place-name"].value}`
+    };
+    newCardForm["place-name"].value = '';
     newCardForm.link.value = '';
     closeModal(newCardPopup);
-    updateCardList([createCard(newCard, deleteCard, showCard)]);
+    const nc = createCard(newCard, deleteCard, showCard);
+    placesList.prepend(nc);
 }
 
 loadCards();
