@@ -3,10 +3,14 @@ export function openModal(window) {
     const closeButton = window.querySelector('.popup__close');
     closeButton.addEventListener('click', x=> closeModal(window));
     window.addEventListener('click', e => overlayClick(e, window));
-    document.addEventListener('keydown', e => closeModal(window));
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            closeModal(window)
+        }
+    });
 }
 
-function closeModal(window) {
+export function closeModal(window) {
     window.classList.remove('popup_is-opened');
 }
 

@@ -1,5 +1,5 @@
 import {initialCards} from "./cards.js";
-import {openModal} from "./modal.js";
+import {openModal, closeModal} from "./modal.js";
 import '../pages/index.css';
 
 const cardTemplate = document.querySelector('#card-template').content;
@@ -12,8 +12,16 @@ const editPopup = document.querySelector('.popup_type_edit');
 const newCardPopup = document.querySelector('.popup_type_new-card');
 const imagePopup = document.querySelector('.popup_type_image');
 
+const editProfileForm = document.forms["edit-profile"]; 
+const newCardForm = document.forms["new-card"];
+
+const profile = document.querySelector('.profile');
+
 editButton.addEventListener('click', () => openModal(editPopup));
 plusButton.addEventListener('click', () => openModal(newCardPopup));
+
+editProfileForm.addEventListener('submit', editProfile);
+newCardForm.addEventListener('submit', addCard);
 
 function showCard(link, alt, title) {
     const image = imagePopup.querySelector('.popup__image');
@@ -57,6 +65,30 @@ function updateCardList(cards) {
     for (const card of cards) {
         placesList.append(card);
     }
+}
+
+function editProfile(event) {
+    event.preventDefault();
+    const profileTitle = profile.querySelector('.profile__title');
+    const profileDescription = profile.querySelector('.profile__description');
+    profileTitle.textContent = editProfileForm.name.value;
+    profileDescription.textContent = editProfileForm.description.value;
+    editProfileForm.name.value = '';
+    editProfileForm.description.value = '';
+    closeModal(editPopup);
+}
+
+function addCard(event) {
+    event.preventDefault();
+    
+    const newCard = {
+        name: newCardForm.name.value,
+        link: newCardForm.link.value,
+    }
+    newCardForm.name.value = '';
+    newCardForm.link.value = '';
+    closeModal(newCardPopup);
+    updateCardList([createCard(newCard, deleteCard, showCard)]);
 }
 
 loadCards();
