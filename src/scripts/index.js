@@ -35,6 +35,7 @@ function showCard(link, alt, title) {
 function createCard(card, deleteCardFunction, openPopup, likeCard) {
     const newCard = cardTemplate.querySelector('.card').cloneNode(true);
     const delButton = newCard.querySelector('.card__delete-button');
+    const likeButton = newCard.querySelector('.card__like-button');
 
     const tTitle = newCard.querySelector('.card__title');
     tTitle.textContent = card.name;
@@ -45,6 +46,7 @@ function createCard(card, deleteCardFunction, openPopup, likeCard) {
 
     delButton.addEventListener('click', evt => deleteCardFunction(newCard));
     tImg.addEventListener('click', () => openPopup(card.link, card.alt, card.name));
+    likeButton.addEventListener('click', () => likeCard(newCard));
 
     return newCard;
 }
@@ -56,7 +58,7 @@ function deleteCard(card) {
 function loadCards() {
     const cards = [];
     initialCards.forEach(card => {
-        cards.push(createCard(card, deleteCard, showCard));
+        cards.push(createCard(card, deleteCard, showCard, likeCard));
     })
     updateCardList(cards);
 }
@@ -84,13 +86,24 @@ function addCard(event) {
     const newCard = {
         name: newCardForm["place-name"].value,
         link: newCardForm.link.value,
-        alt: `На карточке изображен ${newCardForm["place-name"].value}`
+        alt: `На карточке изображен ${newCardForm["place-name"].value}`,
+        isLiked: false
     };
     newCardForm["place-name"].value = '';
     newCardForm.link.value = '';
     closeModal(newCardPopup);
-    const nc = createCard(newCard, deleteCard, showCard);
+    const nc = createCard(newCard, deleteCard, showCard, likeCard);
     placesList.prepend(nc);
+}
+
+function likeCard(card){
+    card.isLiked = !card.isLiked;
+    const heart = card.querySelector('.card__like-button');
+    if (card.isLiked){
+        heart.classList.add('card__like-button_is-active');
+    } else {
+        heart.classList.remove('card__like-button_is-active');
+    }
 }
 
 loadCards();
