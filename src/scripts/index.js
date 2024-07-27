@@ -1,4 +1,4 @@
-import {initialCards} from "./cards.js";
+import {initialCards, createCard, deleteCard, likeCard} from "./cards.js";
 import {openModal, closeModal} from "./modal.js";
 import '../pages/index.css';
 
@@ -32,33 +32,10 @@ function showCard(link, alt, title) {
     openModal(imagePopup);
 }
 
-function createCard(card, deleteCardFunction, openPopup, likeCard) {
-    const newCard = cardTemplate.querySelector('.card').cloneNode(true);
-    const delButton = newCard.querySelector('.card__delete-button');
-    const likeButton = newCard.querySelector('.card__like-button');
-
-    const tTitle = newCard.querySelector('.card__title');
-    tTitle.textContent = card.name;
-
-    const tImg = newCard.querySelector('.card__image');
-    tImg.src = card.link;
-    tImg.alt = card.alt;
-
-    delButton.addEventListener('click', evt => deleteCardFunction(newCard));
-    tImg.addEventListener('click', () => openPopup(card.link, card.alt, card.name));
-    likeButton.addEventListener('click', () => likeCard(newCard));
-
-    return newCard;
-}
-
-function deleteCard(card) {
-    placesList.removeChild(card);
-}
-
 function loadCards() {
     const cards = [];
     initialCards.forEach(card => {
-        cards.push(createCard(card, deleteCard, showCard, likeCard));
+        cards.push(createCard(cardTemplate, placesList, card, deleteCard, showCard, likeCard));
     })
     updateCardList(cards);
 }
@@ -92,18 +69,8 @@ function addCard(event) {
     newCardForm["place-name"].value = '';
     newCardForm.link.value = '';
     closeModal(newCardPopup);
-    const nc = createCard(newCard, deleteCard, showCard, likeCard);
+    const nc = createCard(cardTemplate, placesList, newCard, deleteCard, showCard, likeCard);
     placesList.prepend(nc);
-}
-
-function likeCard(card){
-    card.isLiked = !card.isLiked;
-    const heart = card.querySelector('.card__like-button');
-    if (card.isLiked){
-        heart.classList.add('card__like-button_is-active');
-    } else {
-        heart.classList.remove('card__like-button_is-active');
-    }
 }
 
 loadCards();
