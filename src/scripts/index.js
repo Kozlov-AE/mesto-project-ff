@@ -10,25 +10,28 @@ const plusButton = document.querySelector('.profile__add-button');
 
 const editPopup = document.querySelector('.popup_type_edit');
 const newCardPopup = document.querySelector('.popup_type_new-card');
+
 const imagePopup = document.querySelector('.popup_type_image');
+const popupImage = imagePopup.querySelector('.popup__image');
+const popupTitle = imagePopup.querySelector('.popup__caption')
 
 const editProfileForm = document.forms["edit-profile"]; 
 const newCardForm = document.forms["new-place"];
 
 const profile = document.querySelector('.profile');
+const profileTitle = profile.querySelector('.profile__title');
+const profileDescription = profile.querySelector('.profile__description');
 
-editButton.addEventListener('click', () => openModal(editPopup));
+editButton.addEventListener('click', () => openEditPopup());
 plusButton.addEventListener('click', () => openModal(newCardPopup));
 
 editProfileForm.addEventListener('submit', editProfile);
 newCardForm.addEventListener('submit', addCard);
 
 function showCard(link, alt, title) {
-    const image = imagePopup.querySelector('.popup__image');
-    const pTitle = imagePopup.querySelector('.popup__caption')
-    image.src = link;
-    image.alt = alt;
-    pTitle.textContent = title;
+    popupImage.src = link;
+    popupImage.alt = alt;
+    popupTitle.textContent = title;
     openModal(imagePopup);
 }
 
@@ -48,13 +51,15 @@ function updateCardList(cards) {
 
 function editProfile(event) {
     event.preventDefault();
-    const profileTitle = profile.querySelector('.profile__title');
-    const profileDescription = profile.querySelector('.profile__description');
     profileTitle.textContent = editProfileForm.name.value;
     profileDescription.textContent = editProfileForm.description.value;
-    editProfileForm.name.value = '';
-    editProfileForm.description.value = '';
     closeModal(editPopup);
+}
+
+function openEditPopup() {
+    editProfileForm.name.value = profileTitle.textContent;
+    editProfileForm.description.value = profileDescription.textContent;
+    openModal(editPopup);
 }
 
 function addCard(event) {
