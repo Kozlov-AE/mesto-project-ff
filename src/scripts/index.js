@@ -1,4 +1,5 @@
-import {initialCards, createCard, deleteCard, likeCard} from "./cards.js";
+import {initialCards} from "./cards.js";
+import {createCard, deleteCard, likeCard} from "./card.js";
 import {openModal, closeModal} from "./modal.js";
 import '../pages/index.css';
 
@@ -8,25 +9,46 @@ const placesList = document.querySelector('.places__list');
 const editButton = document.querySelector('.profile__edit-button');
 const plusButton = document.querySelector('.profile__add-button');
 
+const popups = document.querySelectorAll('.popup');
+
 const editPopup = document.querySelector('.popup_type_edit');
+const editProfileForm = document.forms["edit-profile"]; 
+
 const newCardPopup = document.querySelector('.popup_type_new-card');
+const newCardForm = document.forms["new-place"];
 
 const imagePopup = document.querySelector('.popup_type_image');
 const popupImage = imagePopup.querySelector('.popup__image');
 const popupTitle = imagePopup.querySelector('.popup__caption')
 
-const editProfileForm = document.forms["edit-profile"]; 
-const newCardForm = document.forms["new-place"];
-
 const profile = document.querySelector('.profile');
 const profileTitle = profile.querySelector('.profile__title');
 const profileDescription = profile.querySelector('.profile__description');
 
-editButton.addEventListener('click', () => openEditPopup());
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        const openedPopup = document.querySelector('.popup_is-opened');
+        if (openedPopup) {
+            closeModal(openedPopup);
+        }
+    }
+});
+    
+editButton.addEventListener('click', () => openEditProfilePopup());
 plusButton.addEventListener('click', () => openModal(newCardPopup));
 
 editProfileForm.addEventListener('submit', editProfile);
 newCardForm.addEventListener('submit', addCard);
+
+popups.forEach(popup => {
+    const closeButton = popup.querySelector('.popup__close');
+    closeButton.addEventListener('click', () => closeModal(popup));
+    popup.addEventListener('click', evt => {
+        if (evt.target === popup){
+            closeModal(popup);
+        }
+    })
+});
 
 function showCard(link, alt, title) {
     popupImage.src = link;
@@ -38,7 +60,7 @@ function showCard(link, alt, title) {
 function loadCards() {
     const cards = [];
     initialCards.forEach(card => {
-        cards.push(createCard(cardTemplate, placesList, card, deleteCard, showCard, likeCard));
+        cards.push(createCard(cardTemplate, card, deleteCard, showCard, likeCard));
     })
     updateCardList(cards);
 }
@@ -56,7 +78,7 @@ function editProfile(event) {
     closeModal(editPopup);
 }
 
-function openEditPopup() {
+function openEditProfilePopup() {
     editProfileForm.name.value = profileTitle.textContent;
     editProfileForm.description.value = profileDescription.textContent;
     openModal(editPopup);
@@ -74,8 +96,9 @@ function addCard(event) {
     newCardForm["place-name"].value = '';
     newCardForm.link.value = '';
     closeModal(newCardPopup);
-    const nc = createCard(cardTemplate, placesList, newCard, deleteCard, showCard, likeCard);
-    placesList.prepend(nc);
+    const createdCard= createCard(cardTemplate, newCard, deleteCard, showCard, likeCard);
+    placesList.prepend(createdCard);
 }
 
+    
 loadCards();
