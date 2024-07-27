@@ -25,15 +25,6 @@ const profile = document.querySelector('.profile');
 const profileTitle = profile.querySelector('.profile__title');
 const profileDescription = profile.querySelector('.profile__description');
 
-document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-        const openedPopup = document.querySelector('.popup_is-opened');
-        if (openedPopup) {
-            closeModal(openedPopup);
-        }
-    }
-});
-    
 editButton.addEventListener('click', () => openEditProfilePopup());
 plusButton.addEventListener('click', () => openModal(newCardPopup));
 
