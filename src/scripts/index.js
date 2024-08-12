@@ -91,5 +91,13 @@ function addCard(event) {
     placesList.prepend(createdCard);
 }
 
-    
+function validateNewPlace() {
+    const regExp = /[a-zа-яё\-\s]/gi;
+    if (!regExp.test(newCardForm["place-name"].value)) {
+        
+    }
+
+    userList.match(innokentiy);  // [ "Иннокентий" ] 
+}
+
 loadCards();
