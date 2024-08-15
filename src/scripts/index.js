@@ -91,13 +91,20 @@ function addCard(event) {
     placesList.prepend(createdCard);
 }
 
-function validateNewPlace() {
+function validateEditProfile(evt) {
     const regExp = /[a-zа-яё\-\s]/gi;
-    if (!regExp.test(newCardForm["place-name"].value)) {
-        
+    if (!regExp.test(evt.target.value)) {
+       showInputError(editProfileForm, evt.target, "Поддерживаются только буквы, знак тире и пробелы");
     }
-
-    userList.match(innokentiy);  // [ "Иннокентий" ] 
 }
+
+const showInputError = (formElement, inputElement, errorMessage) => {
+    // Находим элемент ошибки внутри самой функции
+    const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+
+    inputElement.classList.add('form__input_type_error');
+    errorElement.textContent = errorMessage;
+    errorElement.classList.add('form__input-error_active');
+};
 
 loadCards();
