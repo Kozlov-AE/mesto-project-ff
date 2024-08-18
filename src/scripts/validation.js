@@ -4,13 +4,36 @@ export function editProfileValidation (form) {
     
 }
 
-function textInputValidation(text) {
-    const regExp = /[a-zа-яё\-\s]/gi;
-    if (!regExp.test(text)) {
-        showInputError(editProfileForm, evt.target, "Поддерживаются только буквы, знак тире и пробелы");
+export function textInputValidation(element) {
+    console.info("Input validation: " + element );
+    const regExp = /^[^0-9\wа-яё\s\-]+$/gi;
+    if (!element.formInputElement.validity.valid) {
+        showError(element.errorElement, element.formInputElement.validationMessage);
+        return;
+    }
+    else if (!regExp.test(element.formInputElement.value)) {
+        showError(element.errorElement, "Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы");
+    } else {
+        hideError(element.errorElement);
     }
 }
 
 function showError(element, text) {
-    element.classList.add('')
+    element.textContent = text;
+    element.classList.add('popup__input-error-show');
+}
+
+function hideError(element) {
+    element.classList.remove('popup__input-error-show');
+    element.textContent = '';
+}
+
+export function subscribeInputElement(element, validationMethod) {
+    element.formInputElement.addEventListener('input', () => {
+        validationMethod(element);
+    });
+}
+
+function unSubscribeInputElement(element, validationMethod) {
+    element.formInputElement.removeListener('input', () => validationMethod(element));
 }

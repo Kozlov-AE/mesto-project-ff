@@ -1,6 +1,8 @@
 import {initialCards} from "./cards.js";
 import {createCard, deleteCard, likeCard} from "./card.js";
 import {openModal, closeModal} from "./modal.js";
+import {subscribeInputElement, textInputValidation} from "./validation";
+import {FormInputError} from "./models/formInputError";
 import '../pages/index.css';
 
 const cardTemplate = document.querySelector('#card-template').content;
@@ -72,6 +74,10 @@ function editProfile(event) {
 function openEditProfilePopup() {
     editProfileForm.name.value = profileTitle.textContent;
     editProfileForm.description.value = profileDescription.textContent;
+    const nameErrorElement = getErrorElement(editProfileForm.name);
+    const descriptionErrorElement = getErrorElement(editProfileForm.description);
+    subscribeInputElement(nameErrorElement, textInputValidation);
+    subscribeInputElement(descriptionErrorElement, textInputValidation);
     openModal(editPopup);
 }
 
@@ -91,20 +97,9 @@ function addCard(event) {
     placesList.prepend(createdCard);
 }
 
-function validateEditProfile(evt) {
-    const regExp = /[a-zа-яё\-\s]/gi;
-    if (!regExp.test(evt.target.value)) {
-       showInputError(editProfileForm, evt.target, "Поддерживаются только буквы, знак тире и пробелы");
-    }
+function getErrorElement(inputElement){
+    const errorElement = document.querySelector(`.${inputElement.id}-error`);
+    return new FormInputError(inputElement, errorElement);
 }
-
-const showInputError = (formElement, inputElement, errorMessage) => {
-    // Находим элемент ошибки внутри самой функции
-    const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
-
-    inputElement.classList.add('form__input_type_error');
-    errorElement.textContent = errorMessage;
-    errorElement.classList.add('form__input-error_active');
-};
 
 loadCards();
