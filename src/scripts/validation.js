@@ -7,21 +7,7 @@ export class ValidationService {
     inactiveButtonClass;
     inputErrorClass;
     errorClass;
-    
-    constructor(formSelector, 
-                inputSelector, 
-                submitButtonSelector, 
-                inactiveButtonClass, 
-                inputErrorClass,
-                errorClass) {
-        this.formSelector = formSelector;
-        this.inputSelector = inputSelector;
-        this.submitButtonSelector = submitButtonSelector;
-        this.inactiveButtonClass = inactiveButtonClass;
-        this.inputErrorClass = inputErrorClass;
-        this.errorClass = errorClass;
-    }
-    
+
     constructor(properties) {
         this.formSelector = properties.formSelector;
         this.inputSelector = properties.inputSelector;
@@ -30,7 +16,7 @@ export class ValidationService {
         this.inputErrorClass = properties.inputErrorClass;
         this.errorClass = properties.errorClass;
     }
-    
+
     subscribeForms() {
         const forms = document.querySelectorAll(this.formSelector);
         forms.forEach(form => {
@@ -38,7 +24,8 @@ export class ValidationService {
             const formInputs = form.querySelectorAll(this.inputSelector);
             formInputs.forEach(input => {
                 const element = this.getErrorElement(input);
-                this.subscribeInputElement(element, this.textInputValidation);
+                element.button = submit;
+                this.subscribeInputElement(element, this.textInputValidation.bind(this));
             })
         })
     }
@@ -47,23 +34,25 @@ export class ValidationService {
         console.info("Input validation: " + element);
         if (!element.formInputElement.validity.valid) {
             if (element.formInputElement.validity.patternMismatch) {
-                showError(element.errorElement, "Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы");
+                this.showError(element, "Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы");
                 return;
             }
-            this.showError(element.errorElement, element.formInputElement.validationMessage);
+            this.showError(element, element.formInputElement.validationMessage);
         } else {
-            this.hideError(element.errorElement);
+            this.hideError(element);
         }
     }
 
     showError(element, text) {
-        element.textContent = text;
-        element.classList.add('popup__input-error-show');
+        element.button.classList.add(this.inactiveButtonClass)
+        element.errorElement.textContent = text;
+        element.errorElement.classList.add('popup__input-error-show');
     }
 
     hideError(element) {
-        element.classList.remove('popup__input-error-show');
-        element.textContent = '';
+        element.errorElement.classList.remove('popup__input-error-show');
+        element.errorElement.textContent = '';
+        element.button.classList.remove(this.inactiveButtonClass)
     }
 
     subscribeInputElement(element, validationMethod) {
@@ -78,6 +67,6 @@ export class ValidationService {
     }
 
     disableSubmitButton(form) {
-        
+
     }
 }
