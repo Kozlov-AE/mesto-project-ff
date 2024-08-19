@@ -1,8 +1,8 @@
 import {initialCards} from "./cards.js";
 import {createCard, deleteCard, likeCard} from "./card.js";
 import {openModal, closeModal} from "./modal.js";
-import {subscribeInputElement, textInputValidation} from "./validation";
-import {FormInputError} from "./models/formInputError";
+import {SubscribeForms} from "./validation";
+import {ValidationService} from "./validation";
 import '../pages/index.css';
 
 const cardTemplate = document.querySelector('#card-template').content;
@@ -32,6 +32,17 @@ plusButton.addEventListener('click', () => openModal(newCardPopup));
 
 editProfileForm.addEventListener('submit', editProfile);
 newCardForm.addEventListener('submit', addCard);
+
+const validationService = new ValidationService({
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_disabled',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__error_visible'
+});
+
+validationService.subscribeForms()
 
 popups.forEach(popup => {
     const closeButton = popup.querySelector('.popup__close');
@@ -74,10 +85,6 @@ function editProfile(event) {
 function openEditProfilePopup() {
     editProfileForm.name.value = profileTitle.textContent;
     editProfileForm.description.value = profileDescription.textContent;
-    const nameErrorElement = getErrorElement(editProfileForm.name);
-    const descriptionErrorElement = getErrorElement(editProfileForm.description);
-    subscribeInputElement(nameErrorElement, textInputValidation);
-    subscribeInputElement(descriptionErrorElement, textInputValidation);
     openModal(editPopup);
 }
 
@@ -97,9 +104,5 @@ function addCard(event) {
     placesList.prepend(createdCard);
 }
 
-function getErrorElement(inputElement){
-    const errorElement = document.querySelector(`.${inputElement.id}-error`);
-    return new FormInputError(inputElement, errorElement);
-}
 
 loadCards();

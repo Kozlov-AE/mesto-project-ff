@@ -1,39 +1,83 @@
-export function editProfileValidation (form) {
-    const name = form.name;
-    const description = form.description;
+import {FormInputError} from "./models/formInputError";
+
+export class ValidationService {
+    formSelector;
+    inputSelector;
+    submitButtonSelector;
+    inactiveButtonClass;
+    inputErrorClass;
+    errorClass;
     
-}
-
-export function textInputValidation(element) {
-    console.info("Input validation: " + element );
-    const regExp = /^[^0-9\wа-яё\s\-]+$/gi;
-    if (!element.formInputElement.validity.valid) {
-        showError(element.errorElement, element.formInputElement.validationMessage);
-        return;
+    constructor(formSelector, 
+                inputSelector, 
+                submitButtonSelector, 
+                inactiveButtonClass, 
+                inputErrorClass,
+                errorClass) {
+        this.formSelector = formSelector;
+        this.inputSelector = inputSelector;
+        this.submitButtonSelector = submitButtonSelector;
+        this.inactiveButtonClass = inactiveButtonClass;
+        this.inputErrorClass = inputErrorClass;
+        this.errorClass = errorClass;
     }
-    else if (!regExp.test(element.formInputElement.value)) {
-        showError(element.errorElement, "Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы");
-    } else {
-        hideError(element.errorElement);
+    
+    constructor(properties) {
+        this.formSelector = properties.formSelector;
+        this.inputSelector = properties.inputSelector;
+        this.submitButtonSelector = properties.submitButtonSelector;
+        this.inactiveButtonClass = properties.inactiveButtonClass;
+        this.inputErrorClass = properties.inputErrorClass;
+        this.errorClass = properties.errorClass;
     }
-}
+    
+    subscribeForms() {
+        const forms = document.querySelectorAll(this.formSelector);
+        forms.forEach(form => {
+            const submit = form.querySelector(this.submitButtonSelector);
+            const formInputs = form.querySelectorAll(this.inputSelector);
+            formInputs.forEach(input => {
+                const element = this.getErrorElement(input);
+                this.subscribeInputElement(element, this.textInputValidation);
+            })
+        })
+    }
 
-function showError(element, text) {
-    element.textContent = text;
-    element.classList.add('popup__input-error-show');
-}
+    textInputValidation(element) {
+        console.info("Input validation: " + element);
+        if (!element.formInputElement.validity.valid) {
+            if (element.formInputElement.validity.patternMismatch) {
+                showError(element.errorElement, "Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы");
+                return;
+            }
+            this.showError(element.errorElement, element.formInputElement.validationMessage);
+        } else {
+            this.hideError(element.errorElement);
+        }
+    }
 
-function hideError(element) {
-    element.classList.remove('popup__input-error-show');
-    element.textContent = '';
-}
+    showError(element, text) {
+        element.textContent = text;
+        element.classList.add('popup__input-error-show');
+    }
 
-export function subscribeInputElement(element, validationMethod) {
-    element.formInputElement.addEventListener('input', () => {
-        validationMethod(element);
-    });
-}
+    hideError(element) {
+        element.classList.remove('popup__input-error-show');
+        element.textContent = '';
+    }
 
-function unSubscribeInputElement(element, validationMethod) {
-    element.formInputElement.removeListener('input', () => validationMethod(element));
+    subscribeInputElement(element, validationMethod) {
+        element.formInputElement.addEventListener('input', () => {
+            validationMethod(element);
+        });
+    }
+
+    getErrorElement(inputElement) {
+        const errorElement = document.querySelector(`.${inputElement.id}-error`);
+        return new FormInputError(inputElement, errorElement);
+    }
+
+    disableSubmitButton(form) {
+        
+    }
 }

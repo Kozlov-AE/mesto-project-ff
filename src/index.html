@@ -39,12 +39,14 @@
             <form class="popup__form" name="edit-profile">
                 <label class="popup__label" for="edit-profile-name">
                     <input id="edit-profile-name" type="text" name="name" class="popup__input popup__input_type_name"
-                           placeholder="Имя" required minlength="2" maxlength="40">
-                    <span class="edit-profile-name popup__input-error"></span>
+                           placeholder="Имя" required minlength="2" maxlength="40"
+                           pattern="^[a-zA-Zа-яА-ЯёЁ\s\-]+$">
+                    <span class="edit-profile-name-error popup__input-error"></span>
                 </label>
                 <label class="popup__label" for="edit-profile-description">
                     <input id="edit-profile-description" type="text" name="description" class="popup__input popup__input_type_description"
-                           placeholder="Занятие" required minlength="2" maxlength="200">
+                           placeholder="Занятие" required minlength="2" maxlength="200"
+                    pattern="^[a-zA-Zа-яА-ЯёЁ\s\-]+$">
                     <span class="edit-profile-description-error popup__input-error"></span>
                 </label>
                 <button type="submit" class="button popup__button">Сохранить</button>
@@ -58,7 +60,9 @@
             <form class="popup__form" name="new-place">
                 <input id="new-place-name" type="text" name="place-name"
                        class="popup__input popup__input_type_card-name"
-                       placeholder="Название" required>
+                       placeholder="Название" required
+                       minlength="2" maxlength="30"
+                       pattern="^[a-zA-Zа-яА-ЯёЁ\s\-]+$">
                 <span class="new-place-name-error popup__input-error"></span>
                 <input id="new-place-description" type="text" name="place-description"
                        class="popup__input popup__input_type_card-description" type="url" name="link"
