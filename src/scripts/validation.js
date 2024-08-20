@@ -32,10 +32,9 @@ export class ValidationService {
 
     textInputValidation(element) {
         console.info("Input validation: " + element);
-        if (!element.formInputElement.validity.valid) {
-            if (element.formInputElement.validity.patternMismatch) {
-                this.showError(element, "Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы");
-                return;
+        if (!element.validity.valid) {
+            if (element.validity.patternMismatch) {
+                element.setCustomValidity(element.dataset.errorMessage);
             }
             this.showError(element, element.formInputElement.validationMessage);
         } else {
@@ -44,9 +43,9 @@ export class ValidationService {
     }
 
     showError(element, text) {
-        element.button.classList.add(this.inactiveButtonClass)
-        element.errorElement.textContent = text;
-        element.errorElement.classList.add('popup__input-error-show');
+        const error = this.getErrorElement(element);
+        error.textContent = text;
+        error.classList.add('popup__input-error-show');
     }
 
     hideError(element) {
@@ -56,17 +55,12 @@ export class ValidationService {
     }
 
     subscribeInputElement(element, validationMethod) {
-        element.formInputElement.addEventListener('input', () => {
+        element.addEventListener('input', () => {
             validationMethod(element);
         });
     }
 
     getErrorElement(inputElement) {
-        const errorElement = document.querySelector(`.${inputElement.id}-error`);
-        return new FormInputError(inputElement, errorElement);
-    }
-
-    disableSubmitButton(form) {
-
+        return document.querySelector(`.${inputElement.id}-error`);
     }
 }
