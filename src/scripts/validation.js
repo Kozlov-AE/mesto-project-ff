@@ -21,42 +21,53 @@ export class ValidationService {
         const forms = document.querySelectorAll(this.formSelector);
         forms.forEach(form => {
             const submit = form.querySelector(this.submitButtonSelector);
-            const formInputs = form.querySelectorAll(this.inputSelector);
+            const formInputs = Array.from(form.querySelectorAll(this.inputSelector));
             formInputs.forEach(input => {
-                const element = this.getErrorElement(input);
-                element.button = submit;
-                this.subscribeInputElement(element, this.textInputValidation.bind(this));
+                this.subscribeInputElement(input, this.textInputValidation.bind(this), formInputs, submit);
             })
         })
     }
 
-    textInputValidation(element) {
+    textInputValidation(element, inputList, button) {
         console.info("Input validation: " + element);
         if (!element.validity.valid) {
+            this.setButtonOff(button);
             if (element.validity.patternMismatch) {
                 element.setCustomValidity(element.dataset.errorMessage);
             }
-            this.showError(element, element.formInputElement.validationMessage);
+            this.showError(element, element.validationMessage);
+            element.setCustomValidity('');
         } else {
             this.hideError(element);
+            if (inputList.every((x) => {return x.validity.valid;})) {
+                this.setButtonOn(button);
+            }
         }
     }
 
     showError(element, text) {
         const error = this.getErrorElement(element);
         error.textContent = text;
-        error.classList.add('popup__input-error-show');
+        error.classList.add(this.errorClass);
     }
 
     hideError(element) {
-        element.errorElement.classList.remove('popup__input-error-show');
-        element.errorElement.textContent = '';
-        element.button.classList.remove(this.inactiveButtonClass)
+        const error = this.getErrorElement(element);
+        error.classList.remove(this.errorClass);
+        error.textContent = '';
+    }
+    
+    setButtonOff(button){
+        button.classList.add(this.inactiveButtonClass);
+    }
+    
+    setButtonOn(button) {
+        button.classList.remove(this.inactiveButtonClass);
     }
 
-    subscribeInputElement(element, validationMethod) {
+    subscribeInputElement(element, validationMethod, inputList, button) {
         element.addEventListener('input', () => {
-            validationMethod(element);
+            validationMethod(element, inputList, button);
         });
     }
 
