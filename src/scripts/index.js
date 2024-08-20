@@ -28,7 +28,7 @@ const profileTitle = profile.querySelector('.profile__title');
 const profileDescription = profile.querySelector('.profile__description');
 
 editButton.addEventListener('click', () => openEditProfilePopup());
-plusButton.addEventListener('click', () => openModal(newCardPopup));
+plusButton.addEventListener('click', () => openNewCardPopup());
 
 editProfileForm.addEventListener('submit', editProfile);
 newCardForm.addEventListener('submit', addCard);
@@ -83,26 +83,37 @@ function editProfile(event) {
 }
 
 function openEditProfilePopup() {
+    validationService.clearErrors(editProfileForm);
     editProfileForm.name.value = profileTitle.textContent;
     editProfileForm.description.value = profileDescription.textContent;
+    validationService.setButtonOn(editProfileForm.querySelector('button'));
     openModal(editPopup);
+}
+
+function openNewCardPopup(){
+    clearNewCardPopup();
+    openModal(newCardPopup);
 }
 
 function addCard(event) {
     event.preventDefault();
-
     const newCard = {
         name: newCardForm["place-name"].value,
         link: newCardForm.link.value,
         alt: `На карточке изображен ${newCardForm["place-name"].value}`,
         isLiked: false
     };
-    newCardForm["place-name"].value = '';
-    newCardForm.link.value = '';
+    clearNewCardPopup();
     closeModal(newCardPopup);
-    const createdCard= createCard(cardTemplate, newCard, deleteCard, showCard, likeCard);
+    const createdCard = createCard(cardTemplate, newCard, deleteCard, showCard, likeCard);
     placesList.prepend(createdCard);
 }
 
+function clearNewCardPopup() {
+    newCardForm["place-name"].value = '';
+    newCardForm.link.value = '';
+    validationService.clearErrors(newCardForm);
+    validationService.setButtonOff(newCardForm.querySelector('button'));
+}
 
 loadCards();

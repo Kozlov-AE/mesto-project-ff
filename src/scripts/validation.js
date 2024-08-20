@@ -74,4 +74,10 @@ export class ValidationService {
     getErrorElement(inputElement) {
         return document.querySelector(`.${inputElement.id}-error`);
     }
+    
+    clearErrors(form) {
+        form.querySelectorAll(this.inputSelector).forEach((x) => {
+            this.hideError(x);
+        });
+    }
 }
