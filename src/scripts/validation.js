@@ -1,5 +1,3 @@
-import {FormInputError} from "./models/formInputError";
-
 export class ValidationService {
     formSelector;
     inputSelector;

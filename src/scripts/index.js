@@ -1,7 +1,6 @@
 import {initialCards} from "./cards.js";
 import {createCard, deleteCard, likeCard} from "./card.js";
 import {openModal, closeModal} from "./modal.js";
-import {SubscribeForms} from "./validation";
 import {ValidationService} from "./validation";
 import '../pages/index.css';
 
