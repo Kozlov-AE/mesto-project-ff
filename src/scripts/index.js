@@ -3,6 +3,7 @@ import {createCard, deleteCard, likeCard} from "./card.js";
 import {openModal, closeModal} from "./modal.js";
 import {ValidationService} from "./validation";
 import '../pages/index.css';
+import {ApiService} from "./api";
 
 const cardTemplate = document.querySelector('#card-template').content;
 const placesList = document.querySelector('.places__list');
@@ -13,7 +14,7 @@ const plusButton = document.querySelector('.profile__add-button');
 const popups = document.querySelectorAll('.popup');
 
 const editPopup = document.querySelector('.popup_type_edit');
-const editProfileForm = document.forms["edit-profile"]; 
+const editProfileForm = document.forms["edit-profile"];
 
 const newCardPopup = document.querySelector('.popup_type_new-card');
 const newCardForm = document.forms["new-place"];
@@ -25,6 +26,7 @@ const popupTitle = imagePopup.querySelector('.popup__caption')
 const profile = document.querySelector('.profile');
 const profileTitle = profile.querySelector('.profile__title');
 const profileDescription = profile.querySelector('.profile__description');
+const profileAvatar = profile.querySelector('.profile__image');
 
 editButton.addEventListener('click', () => openEditProfilePopup());
 plusButton.addEventListener('click', () => openNewCardPopup());
@@ -41,13 +43,16 @@ const validationService = new ValidationService({
     errorClass: 'popup__input-error-show'
 });
 
-validationService.subscribeForms()
+const apiService = new ApiService('https://nomoreparties.co/v1/wff-cohort-21/', '06e37664-dae8-425c-9b1a-fb1b9b710a57')
+
+validationService.subscribeForms();
+
 
 popups.forEach(popup => {
     const closeButton = popup.querySelector('.popup__close');
     closeButton.addEventListener('click', () => closeModal(popup));
     popup.addEventListener('click', evt => {
-        if (evt.target === popup){
+        if (evt.target === popup) {
             closeModal(popup);
         }
     })
@@ -61,11 +66,10 @@ function showCard(link, alt, title) {
 }
 
 function loadCards() {
-    const cards = [];
-    initialCards.forEach(card => {
-        cards.push(createCard(cardTemplate, card, deleteCard, showCard, likeCard));
-    })
-    updateCardList(cards);
+    apiService.get('cards')
+        .then(json => json.map(card => createCard(cardTemplate, card, deleteCard, showCard, likeCard)))
+        .then(cards => updateCardList(cards))
+        .catch(err => console.error(err));
 }
 
 function updateCardList(cards) {
@@ -89,7 +93,7 @@ function openEditProfilePopup() {
     openModal(editPopup);
 }
 
-function openNewCardPopup(){
+function openNewCardPopup() {
     openModal(newCardPopup);
 }
 
@@ -109,4 +113,14 @@ function addCard(event) {
     placesList.prepend(createdCard);
 }
 
+function loadProfile() {
+    apiService.get('users/me')
+        .then(json => {
+            profileTitle.textContent = json.name;
+            profileDescription.textContent = json.about;
+            profileAvatar.src = json.avatar;
+        })
+}
+
+loadProfile();
 loadCards();

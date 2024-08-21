@@ -8,7 +8,7 @@ export function createCard(cardTemplate, card, deleteCardFunction, openPopup, li
 
     const tImg = newCard.querySelector('.card__image');
     tImg.src = card.link;
-    tImg.alt = card.alt;
+    tImg.alt = card.name;
 
     delButton.addEventListener('click', () => deleteCardFunction(newCard));
     tImg.addEventListener('click', () => openPopup(card.link, card.alt, card.name));

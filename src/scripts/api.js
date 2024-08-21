@@ -1,4 +1,4 @@
-export class apiService {
+export class ApiService {
     baseUrl;
     headers;
 
@@ -10,8 +10,8 @@ export class apiService {
         }
     }
 
-    getMe(cohortId) {
-        return fetch(`${this.baseUrl}/users/me`, {
+    get(address) {
+        return fetch(`${this.baseUrl}${address}`, {
             headers: this.headers
         })
             .then(res => {
@@ -22,5 +22,4 @@ export class apiService {
             })
             .catch(err => console.error(err));
     }
-
 }
