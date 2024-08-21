@@ -91,7 +91,6 @@ function openEditProfilePopup() {
 }
 
 function openNewCardPopup(){
-    clearNewCardPopup();
     openModal(newCardPopup);
 }
 
@@ -103,17 +102,12 @@ function addCard(event) {
         alt: `На карточке изображен ${newCardForm["place-name"].value}`,
         isLiked: false
     };
-    clearNewCardPopup();
+    newCardForm["place-name"].value = '';
+    newCardForm.link.value = '';
+    validationService.setButtonOff(newCardForm.querySelector('button'));
     closeModal(newCardPopup);
     const createdCard = createCard(cardTemplate, newCard, deleteCard, showCard, likeCard);
     placesList.prepend(createdCard);
-}
-
-function clearNewCardPopup() {
-    newCardForm["place-name"].value = '';
-    newCardForm.link.value = '';
-    validationService.clearErrors(newCardForm);
-    validationService.setButtonOff(newCardForm.querySelector('button'));
 }
 
 loadCards();
