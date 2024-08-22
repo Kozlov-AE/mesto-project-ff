@@ -2,6 +2,7 @@ export function createCard(cardTemplate, card, deleteCardFunction, openPopup, li
     const newCard = cardTemplate.querySelector('.card').cloneNode(true);
     const delButton = newCard.querySelector('.card__delete-button');
     const likeButton = newCard.querySelector('.card__like-button');
+    const likeCount = newCard.querySelector('.card__like-counter');
 
     const tTitle = newCard.querySelector('.card__title');
     tTitle.textContent = card.name;
@@ -10,6 +11,8 @@ export function createCard(cardTemplate, card, deleteCardFunction, openPopup, li
     tImg.src = card.link;
     tImg.alt = card.name;
 
+    likeCount.textContent = card.likes.length;
+    
     delButton.addEventListener('click', () => deleteCardFunction(newCard));
     tImg.addEventListener('click', () => openPopup(card.link, card.alt, card.name));
     likeButton.addEventListener('click', () => likeCard(newCard));

@@ -93,11 +93,14 @@
 <template id="card-template">
     <li class="places__item card">
         <img class="card__image" src="" alt=""/>
-        <button type="button" class="card__delete-button" aria-label="Удалить карточку"></button>
         <div class="card__description">
+            <button type="button" class="card__delete-button" aria-label="Удалить карточку"></button>
             <h2 class="card__title">
             </h2>
-            <button type="button" class="card__like-button" aria-label="Лайкнуть карточку"></button>
+            <div class="card__like">
+                <button type="button" class="card__like-button" aria-label="Лайкнуть карточку"></button>
+                <span class="card__like-counter">0</span>
+            </div>
         </div>
     </li>
 </template>
