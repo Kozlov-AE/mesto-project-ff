@@ -18,8 +18,39 @@ export class ApiService {
                 if (res.ok) {
                     return res.json();
                 }
-                return Promise.reject(`Ошибка ${res.status}`);
+                return Promise.reject(`Ответ сервера ${res.status}`);
             })
-            .catch(err => console.error(err));
+            .catch(err => console.error(`Ошибка выполнения базового запроса GET: ${err}`));
+    }
+
+    path(address, object) {
+        return fetch(`${this.baseUrl}${address}`, {
+            method: 'PATCH',
+            headers: this.headers,
+            body: JSON.stringify(object)
+        })
+            .then(res => {
+                console.info(res);
+                if (res.ok) {
+                    return res.json();
+                }
+                return Promise.reject(`Ответ сервера ${res.status}`);
+            })
+            .catch(err => console.error(`Ошибка выполнения базового запроса PATCH: ${err}`));
+    }
+
+    post(address, object) {
+        return fetch(`${this.baseUrl}${address}`, {
+            method: 'POST',
+            headers: this.headers,
+            body: JSON.stringify(object)
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json();
+                }
+                return Promise.reject(`Ответ сервера ${res.status}`);
+            })
+            .catch(err => console.error(`Ошибка выполнения базового запроса POST: ${err}`));
     }
 }

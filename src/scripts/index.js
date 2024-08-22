@@ -47,7 +47,6 @@ const apiService = new ApiService('https://nomoreparties.co/v1/wff-cohort-21/', 
 
 validationService.subscribeForms();
 
-
 popups.forEach(popup => {
     const closeButton = popup.querySelector('.popup__close');
     closeButton.addEventListener('click', () => closeModal(popup));
@@ -80,9 +79,17 @@ function updateCardList(cards) {
 
 function editProfile(event) {
     event.preventDefault();
-    profileTitle.textContent = editProfileForm.name.value;
-    profileDescription.textContent = editProfileForm.description.value;
-    closeModal(editPopup);
+    apiService.path('users/me', {
+        name: editProfileForm.name.value,
+        about: editProfileForm.description.value
+    })
+        .then(json => {
+            console.log(json);
+            profileTitle.textContent = json.name ?? editProfileForm.name.value;
+            profileDescription.textContent = json.description ?? editProfileForm.description.value;
+            closeModal(editPopup);
+        })
+        .catch(err => console.error(err));
 }
 
 function openEditProfilePopup() {
@@ -102,15 +109,17 @@ function addCard(event) {
     const newCard = {
         name: newCardForm["place-name"].value,
         link: newCardForm.link.value,
-        alt: `На карточке изображен ${newCardForm["place-name"].value}`,
-        isLiked: false
     };
-    newCardForm["place-name"].value = '';
-    newCardForm.link.value = '';
-    validationService.setButtonOff(newCardForm.querySelector('button'));
-    closeModal(newCardPopup);
-    const createdCard = createCard(cardTemplate, newCard, deleteCard, showCard, likeCard);
-    placesList.prepend(createdCard);
+    apiService.post('cards', newCard)
+        .then(json => {
+
+            newCardForm["place-name"].value = '';
+            newCardForm.link.value = '';
+            validationService.setButtonOff(newCardForm.querySelector('button'));
+            closeModal(newCardPopup);
+            const createdCard = createCard(cardTemplate, newCard, deleteCard, showCard, likeCard);
+            placesList.prepend(createdCard);
+        });
 }
 
 function loadProfile() {
@@ -118,7 +127,7 @@ function loadProfile() {
         .then(json => {
             profileTitle.textContent = json.name;
             profileDescription.textContent = json.about;
-            profileAvatar.src = json.avatar;
+            profileAvatar.style.backgroundImage = `url(${json.avatar})`;
         })
 }
 
