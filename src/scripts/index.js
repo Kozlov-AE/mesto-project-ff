@@ -1,4 +1,3 @@
-import {initialCards} from "./cards.js";
 import {createCard, deleteCard, likeCard} from "./card.js";
 import {openModal, closeModal} from "./modal.js";
 import {ValidationService} from "./validation";
@@ -27,6 +26,8 @@ const profile = document.querySelector('.profile');
 const profileTitle = profile.querySelector('.profile__title');
 const profileDescription = profile.querySelector('.profile__description');
 const profileAvatar = profile.querySelector('.profile__image');
+
+let profileId = '';
 
 editButton.addEventListener('click', () => openEditProfilePopup());
 plusButton.addEventListener('click', () => openNewCardPopup());
@@ -66,7 +67,7 @@ function showCard(link, alt, title) {
 
 function loadCards() {
     apiService.get('cards')
-        .then(json => json.map(card => createCard(cardTemplate, card, deleteCard, showCard, likeCard)))
+        .then(json => json.map(card => createCard(cardTemplate, card, deleteCard, showCard, likeCard, profileId, apiService)))
         .then(cards => updateCardList(cards))
         .catch(err => console.error(err));
 }
@@ -117,7 +118,7 @@ function addCard(event) {
             newCardForm.link.value = '';
             validationService.setButtonOff(newCardForm.querySelector('button'));
             closeModal(newCardPopup);
-            const createdCard = createCard(cardTemplate, newCard, deleteCard, showCard, likeCard);
+            const createdCard = createCard(cardTemplate, newCard, deleteCard(), showCard, likeCard, profileId, apiService);
             placesList.prepend(createdCard);
         });
 }
@@ -128,6 +129,7 @@ function loadProfile() {
             profileTitle.textContent = json.name;
             profileDescription.textContent = json.about;
             profileAvatar.style.backgroundImage = `url(${json.avatar})`;
+            profileId = json._id;
         })
 }
 

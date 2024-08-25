@@ -1,9 +1,11 @@
 export class ApiService {
     baseUrl;
     headers;
+    token;
 
     constructor(baseUrl, token) {
         this.baseUrl = baseUrl;
+        this.token = token;
         this.headers = {
             authorization: token,
             'Content-Type': 'application/json'
@@ -52,5 +54,45 @@ export class ApiService {
                 return Promise.reject(`Ответ сервера ${res.status}`);
             })
             .catch(err => console.error(`Ошибка выполнения базового запроса POST: ${err}`));
+    }
+    
+    delete(address) {
+        return fetch(`${this.baseUrl}/${address}`, {
+            method: 'DELETE',
+            headers: {
+                authorization: this.token,
+            }
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json();
+                }
+                return Promise.reject(`Ответ сервера ${res.status}`)
+            })
+            .catch(err => console.error(`Ошибка выполнения базового запроса DELETE: ${err}`));
+    }
+
+    deleteCard(cardId) {
+        return this.delete (`cards/${cardId}`);
+    }
+
+    likeCard(cardId) {
+        return fetch(`${this.baseUrl}/cards/likes/${cardId}`, {
+            method: 'PUT',
+            headers: {
+                authorization: this.token
+            }
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json();
+                }
+                return Promise.reject(`Ответ сервера ${res.status}`);
+            })
+            .catch(err => console.error(`Ошибка выполнения базового запроса DELETE: ${err}`));
+    }
+    
+    unlikeCard(cardId) {
+        return this.delete (`cards/likes/${cardId}`);
     }
 }
