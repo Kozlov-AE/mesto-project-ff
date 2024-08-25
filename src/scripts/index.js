@@ -8,6 +8,7 @@ const cardTemplate = document.querySelector('#card-template').content;
 const placesList = document.querySelector('.places__list');
 
 const editButton = document.querySelector('.profile__edit-button');
+const editAvatarButton = document.querySelector('.profile__image_edit-button');
 const plusButton = document.querySelector('.profile__add-button');
 
 const popups = document.querySelectorAll('.popup');
@@ -22,18 +23,22 @@ const imagePopup = document.querySelector('.popup_type_image');
 const popupImage = imagePopup.querySelector('.popup__image');
 const popupTitle = imagePopup.querySelector('.popup__caption')
 
-const profile = document.querySelector('.profile');
-const profileTitle = profile.querySelector('.profile__title');
-const profileDescription = profile.querySelector('.profile__description');
-const profileAvatar = profile.querySelector('.profile__image');
+const profileElement = document.querySelector('.profile');
+const profileTitle = profileElement.querySelector('.profile__title');
+const profileDescription = profileElement.querySelector('.profile__description');
+const profileAvatar = profileElement.querySelector('.profile__image');
+const avatarPopup = document.querySelector('.popup_type_edit-avatar');
+const avatarEditForm = document.forms["edit-avatar"];
 
 let profileId = '';
 
 editButton.addEventListener('click', () => openEditProfilePopup());
 plusButton.addEventListener('click', () => openNewCardPopup());
+editAvatarButton.addEventListener('click', () => openEditAvatarPopup());
 
 editProfileForm.addEventListener('submit', editProfile);
 newCardForm.addEventListener('submit', addCard);
+avatarEditForm.addEventListener('submit', editAvatar);
 
 const validationService = new ValidationService({
     formSelector: '.popup__form',
@@ -131,6 +136,16 @@ function loadProfile() {
             profileAvatar.style.backgroundImage = `url(${json.avatar})`;
             profileId = json._id;
         })
+}
+
+function openEditAvatarPopup() {
+    avatarEditForm.link.value = profileAvatar.style.backgroundImage.slice(5,-2);
+    openModal(avatarPopup);
+}
+
+function editAvatar(event) {
+    event.preventDefault();
+    apiService.updateAvatar(avatarEditForm.link.value);
 }
 
 loadProfile();

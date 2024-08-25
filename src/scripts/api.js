@@ -55,7 +55,7 @@ export class ApiService {
             })
             .catch(err => console.error(`Ошибка выполнения базового запроса POST: ${err}`));
     }
-    
+
     delete(address) {
         return fetch(`${this.baseUrl}/${address}`, {
             method: 'DELETE',
@@ -73,7 +73,7 @@ export class ApiService {
     }
 
     deleteCard(cardId) {
-        return this.delete (`cards/${cardId}`);
+        return this.delete(`cards/${cardId}`);
     }
 
     likeCard(cardId) {
@@ -91,8 +91,30 @@ export class ApiService {
             })
             .catch(err => console.error(`Ошибка выполнения базового запроса DELETE: ${err}`));
     }
-    
+
     unlikeCard(cardId) {
-        return this.delete (`cards/likes/${cardId}`);
+        return this.delete(`cards/likes/${cardId}`);
     }
+
+    async updateAvatar(url) {
+        let isImage = await fetch(`${url}`, {
+            method: 'HEAD'
+        })
+            .then(res => {
+                let r = res.json();
+            });
+        return fetch(`${this.baseUrl}/users/me/avatar`, {
+            method: 'PATCH',
+            headers: this.headers,
+            body: JSON.stringify(url)
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json();
+                }
+                return Promise.reject(`Ответ сервера ${res.status}`);
+            })
+            .catch(err => console.error(`Ошибка выполнения базового запроса DELETE: ${err}`));
+    }
+
 }
