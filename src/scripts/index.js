@@ -139,13 +139,24 @@ function loadProfile() {
 }
 
 function openEditAvatarPopup() {
-    avatarEditForm.link.value = profileAvatar.style.backgroundImage.slice(5,-2);
+    avatarEditForm.link.value = profileAvatar.style.backgroundImage.slice(5, -2);
     openModal(avatarPopup);
 }
 
 function editAvatar(event) {
     event.preventDefault();
-    apiService.updateAvatar(avatarEditForm.link.value);
+    apiService.checkImageLink(avatarEditForm.link.value)
+        .then(() => {
+            apiService.updateAvatar(avatarEditForm.link.value);
+        })
+        .then(res => {
+            if (res.ok) {
+                closeModal(avatarPopup);
+            }
+        })
+        .catch(err => {
+            validationService.showError(avatarEditForm.link, err)
+        });
 }
 
 loadProfile();

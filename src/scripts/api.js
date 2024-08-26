@@ -77,7 +77,7 @@ export class ApiService {
     }
 
     likeCard(cardId) {
-        return fetch(`${this.baseUrl}/cards/likes/${cardId}`, {
+        return fetch(`${this.baseUrl}cards/likes/${cardId}`, {
             method: 'PUT',
             headers: {
                 authorization: this.token
@@ -93,20 +93,30 @@ export class ApiService {
     }
 
     unlikeCard(cardId) {
-        return this.delete(`cards/likes/${cardId}`);
+        return this.delete(`/cards/likes/${cardId}`);
     }
 
-    async updateAvatar(url) {
-        let isImage = await fetch(`${url}`, {
+    checkImageLink(url) {
+        return fetch(url, {
             method: 'HEAD'
         })
             .then(res => {
-                let r = res.json();
-            });
-        return fetch(`${this.baseUrl}/users/me/avatar`, {
+                    if (res.ok && res.headers['content-type'].includes('image')) {
+                        return Promise.resolve();
+                    }
+                    return Promise.reject("Ссылка не указывает на изображение")
+                }
+            )
+    }
+
+    sendAvatar(url) {
+        const avatar = {
+            avatar: url
+        }
+        return fetch(`${this.baseUrl}users/me/avatar`, {
             method: 'PATCH',
             headers: this.headers,
-            body: JSON.stringify(url)
+            body: JSON.stringify(avatar)
         })
             .then(res => {
                 if (res.ok) {
@@ -114,7 +124,6 @@ export class ApiService {
                 }
                 return Promise.reject(`Ответ сервера ${res.status}`);
             })
-            .catch(err => console.error(`Ошибка выполнения базового запроса DELETE: ${err}`));
+            .catch(err => console.error(`Ошибка при отправке ссылки на аватар: ${res}`));
     }
-
 }
