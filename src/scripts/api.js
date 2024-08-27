@@ -89,7 +89,10 @@ export class ApiService {
                 }
                 return Promise.reject(`Ответ сервера ${res.status}`);
             })
-            .catch(err => console.error(`Ошибка выполнения базового запроса DELETE: ${err}`));
+            .catch(err => {
+                console.error(`Ошибка выполнения базового запроса DELETE: ${err}`);
+                return Promise.reject(`Ошибка выполнения базового запроса DELETE: ${err}`);
+            });
     }
 
     unlikeCard(cardId) {
@@ -101,15 +104,18 @@ export class ApiService {
             method: 'HEAD'
         })
             .then(res => {
-                    if (res.ok && res.headers['content-type'].includes('image')) {
-                        return Promise.resolve(true);
+                    if (res.ok) {
+                        const contentType = res.headers.get('content-type');
+                        if (contentType && contentType.includes('image')) {
+                            return Promise.resolve(true);
+                        }
                     }
-                    return Promise.reject("Ссылка не указывает на изображение")
+                    return Promise.reject();
                 }
             )
             .catch(err => {
                 console.log(`Ошибка при проверке ссылки на изображение: ${err}`);
-                return Promise.reject(`Ошибка при проверке ссылки на изображение: ${err}`)
+                return Promise.reject(`Ошибка при проверке ссылки на изображение`);
             });
     }
 
@@ -129,8 +135,8 @@ export class ApiService {
                 return Promise.reject(`Ответ сервера ${res.status}`);
             })
             .catch(err => {
-                console.error(`Ошибка при отправке ссылки на аватар: ${err}`)
-                return Promise.reject(`Ошибка при отправке ссылки на аватар: ${err}`)
+                console.error(`Ошибка при отправке ссылки на аватар: ${err}`);
+                return Promise.reject(`Ошибка сервера при отправке ссылки на аватар`);
             });
     }
 }

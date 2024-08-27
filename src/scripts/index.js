@@ -128,7 +128,7 @@ function addCard(event) {
         });
 }
 
-function loadProfile() {
+async function loadProfile() {
     apiService.get('users/me')
         .then(json => {
             profileTitle.textContent = json.name;
@@ -140,24 +140,22 @@ function loadProfile() {
 
 function openEditAvatarPopup() {
     avatarEditForm.link.value = profileAvatar.style.backgroundImage.slice(5, -2);
+    validationService.clearErrors(avatarEditForm);
     openModal(avatarPopup);
 }
 
-function editAvatar(event) {
+async function editAvatar(event) {
     event.preventDefault();
     apiService.checkImageLink(avatarEditForm.link.value)
-        .then(() => {
-            apiService.updateAvatar(avatarEditForm.link.value);
-        })
+        .then(() => apiService.sendAvatar(avatarEditForm.link.value))
         .then(res => {
-            if (res.ok) {
-                closeModal(avatarPopup);
-            }
+            return loadProfile();
         })
+        .then(() => closeModal(avatarPopup))
         .catch(err => {
             validationService.showError(avatarEditForm.link, err)
         });
 }
 
-loadProfile();
+await loadProfile();
 loadCards();
