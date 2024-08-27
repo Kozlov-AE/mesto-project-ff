@@ -102,11 +102,15 @@ export class ApiService {
         })
             .then(res => {
                     if (res.ok && res.headers['content-type'].includes('image')) {
-                        return Promise.resolve();
+                        return Promise.resolve(true);
                     }
                     return Promise.reject("Ссылка не указывает на изображение")
                 }
             )
+            .catch(err => {
+                console.log(`Ошибка при проверке ссылки на изображение: ${err}`);
+                return Promise.reject(`Ошибка при проверке ссылки на изображение: ${err}`)
+            });
     }
 
     sendAvatar(url) {
@@ -124,6 +128,9 @@ export class ApiService {
                 }
                 return Promise.reject(`Ответ сервера ${res.status}`);
             })
-            .catch(err => console.error(`Ошибка при отправке ссылки на аватар: ${res}`));
+            .catch(err => {
+                console.error(`Ошибка при отправке ссылки на аватар: ${err}`)
+                return Promise.reject(`Ошибка при отправке ссылки на аватар: ${err}`)
+            });
     }
 }
