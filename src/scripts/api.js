@@ -53,7 +53,10 @@ export class ApiService {
                 }
                 return Promise.reject(`Ответ сервера ${res.status}`);
             })
-            .catch(err => console.error(`Ошибка выполнения базового запроса POST: ${err}`));
+            .catch(err => {
+                console.error(`Ошибка выполнения базового запроса POST: ${err}`);
+                return Promise.reject();
+            });
     }
 
     delete(address) {
@@ -69,7 +72,10 @@ export class ApiService {
                 }
                 return Promise.reject(`Ответ сервера ${res.status}`)
             })
-            .catch(err => console.error(`Ошибка выполнения базового запроса DELETE: ${err}`));
+            .catch(err => {
+                console.error(`Ошибка выполнения базового запроса DELETE: ${err}`);
+                return Promise.reject();
+            });
     }
 
     deleteCard(cardId) {
@@ -87,11 +93,12 @@ export class ApiService {
                 if (res.ok) {
                     return res.json();
                 }
-                return Promise.reject(`Ответ сервера ${res.status}`);
+                log.error(`Ответ сервера ${res.status}`);
+                return Promise.reject();
             })
             .catch(err => {
-                console.error(`Ошибка выполнения базового запроса DELETE: ${err}`);
-                return Promise.reject(`Ошибка выполнения базового запроса DELETE: ${err}`);
+                console.error(`Ошибка выполнения likeCard: ${err}`);
+                return Promise.reject(`Ошибка выполнения likeCard`);
             });
     }
 
