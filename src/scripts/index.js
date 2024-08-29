@@ -1,4 +1,4 @@
-import {createCard, deleteCard, likeCard} from "./card.js";
+import {createCard, likeCard} from "./card.js";
 import {openModal, closeModal} from "./modal.js";
 import {ValidationService} from "./validation";
 import '../pages/index.css';
@@ -30,7 +30,11 @@ const profileAvatar = profileElement.querySelector('.profile__image');
 const avatarPopup = document.querySelector('.popup_type_edit-avatar');
 const avatarEditForm = document.forms["edit-avatar"];
 
+const confirmationPopup = document.querySelector('.popup_type_confirm')
+const confirmationForm = document.forms["submit"];
+
 let profileId = '';
+let confirmationMethod;
 
 editButton.addEventListener('click', () => openEditProfilePopup());
 plusButton.addEventListener('click', () => openNewCardPopup());
@@ -39,6 +43,10 @@ editAvatarButton.addEventListener('click', () => openEditAvatarPopup());
 editProfileForm.addEventListener('submit', editProfile);
 newCardForm.addEventListener('submit', addCard);
 avatarEditForm.addEventListener('submit', editAvatar);
+confirmationForm.addEventListener('submit', () => {
+    confirmationMethod();
+    closeConfirmationPopup();
+});
 
 const validationService = new ValidationService({
     formSelector: '.popup__form',
@@ -123,12 +131,25 @@ function addCard(event) {
             newCardForm.link.value = '';
             validationService.setButtonOff(newCardForm.querySelector('button'));
             closeModal(newCardPopup);
-            const createdCard = createCard(cardTemplate, newCard, deleteCard(), showCard, likeCard, profileId, apiService);
+            const createdCard = createCard(cardTemplate, newCard, deleteCard, showCard, likeCard, profileId, apiService);
             placesList.prepend(createdCard);
         });
 }
 
-async function loadProfile() {
+function deleteCard(card, cardId) {
+    confirmationMethod = () => {
+        apiService.deleteCard(cardId)
+            .then((json) => {
+                    if (json != undefined) {
+                        card.remove();
+                    }
+                }
+            );
+        };
+    openConfirmationPopup();
+}
+
+function loadProfile() {
     apiService.get('users/me')
         .then(json => {
             profileTitle.textContent = json.name;
@@ -144,7 +165,7 @@ function openEditAvatarPopup() {
     openModal(avatarPopup);
 }
 
-async function editAvatar(event) {
+function editAvatar(event) {
     event.preventDefault();
     apiService.checkImageLink(avatarEditForm.link.value)
         .then(() => apiService.sendAvatar(avatarEditForm.link.value))
@@ -155,6 +176,14 @@ async function editAvatar(event) {
         .catch(err => {
             validationService.showError(avatarEditForm.link, err)
         });
+}
+
+function openConfirmationPopup() {
+    openModal(confirmationPopup);
+}
+
+function closeConfirmationPopup() {
+    closeModal(confirmationPopup);
 }
 
 await loadProfile();

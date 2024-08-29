@@ -17,7 +17,9 @@ export function createCard(cardTemplate, card, deleteCardFunction, openPopup, li
     if (card.owner._id != profileId) {
         delButton.classList.add('card__delete-button--disabled');
     } else {
-        delButton.addEventListener('click', () => deleteCardFunction(newCard, card._id, apiService));
+        delButton.addEventListener('click', () => {
+            deleteCardFunction(newCard, card._id);
+        });
     }
 
     tImg.addEventListener('click', () => openPopup(card.link, card.alt, card.name));
@@ -29,16 +31,6 @@ export function createCard(cardTemplate, card, deleteCardFunction, openPopup, li
     likeButton.addEventListener('click', () => likeCard(newCard, card._id, apiService));
 
     return newCard;
-}
-
-export function deleteCard(card, cardId, apiService) {
-    apiService.deleteCard(cardId)
-        .then((json) => {
-                if (json != undefined) {
-                    card.remove();
-                }
-            }
-        );
 }
 
 export function likeCard(card, cardId, apiService) {
