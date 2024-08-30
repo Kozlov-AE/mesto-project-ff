@@ -126,12 +126,12 @@ function addCard(event) {
     };
     apiService.post('cards', newCard)
         .then(json => {
-
-            newCardForm["place-name"].value = '';
-            newCardForm.link.value = '';
+            newCardForm.reset();
+            // newCardForm["place-name"].value = '';
+            // newCardForm.link.value = '';
             validationService.setButtonOff(newCardForm.querySelector('button'));
             closeModal(newCardPopup);
-            const createdCard = createCard(cardTemplate, newCard, deleteCard, showCard, likeCard, profileId, apiService);
+            const createdCard = createCard(cardTemplate, json, deleteCard, showCard, likeCard, profileId, apiService);
             placesList.prepend(createdCard);
         });
 }
@@ -186,5 +186,5 @@ function closeConfirmationPopup() {
     closeModal(confirmationPopup);
 }
 
-await loadProfile();
+loadProfile();
 loadCards();

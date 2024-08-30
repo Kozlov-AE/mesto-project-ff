@@ -54,11 +54,11 @@ export class ValidationService {
         error.classList.remove(this.errorClass);
         error.textContent = '';
     }
-    
+
     setButtonOff(button){
         button.classList.add(this.inactiveButtonClass);
     }
-    
+
     setButtonOn(button) {
         button.classList.remove(this.inactiveButtonClass);
     }
@@ -72,7 +72,7 @@ export class ValidationService {
     getErrorElement(inputElement) {
         return document.querySelector(`.${inputElement.id}-error`);
     }
-    
+
     clearErrors(form) {
         form.querySelectorAll(this.inputSelector).forEach((x) => {
             this.hideError(x);
