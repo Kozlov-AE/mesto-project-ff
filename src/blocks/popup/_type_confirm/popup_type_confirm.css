@@ -1,0 +1,16 @@
+.popup_type_confirm .popup__content {
+  min-height: 181px;
+}
+
+.popup_type_confirm .popup__close {
+  right: -42px;
+  top: -41px;
+}
+
+.popup_type_confirm .popup__form {
+  margin-top: 32px;
+}
+
+.popup_type_confirm .popup__button {
+  margin-top: 0;
+}
