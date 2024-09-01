@@ -92,26 +92,6 @@ function showCard(link, alt, title) {
   openModal(imagePopup);
 }
 
-function loadCards() {
-  apiService
-    .get("cards")
-    .then((json) =>
-      json.map((card) =>
-        createCard(
-          cardTemplate,
-          card,
-          deleteCardFunc,
-          showCard,
-          likeCard,
-          profileId,
-          apiService
-        )
-      )
-    )
-    .then((cards) => updateCardList(cards))
-    .catch((err) => console.error(err));
-}
-
 function updateCardList(cards) {
   for (const card of cards) {
     placesList.append(card);
@@ -122,11 +102,7 @@ function editProfile(event) {
   event.preventDefault();
   const btn = event.target.querySelector(".button");
   const txt = changeButtonText(btn);
-  apiService
-    .path("users/me", {
-      name: editProfileForm.name.value,
-      about: editProfileForm.description.value,
-    })
+  apiService.updateProfile(editProfileForm.name.value, editProfileForm.description.value)
     .then((json) => {
       profileTitle.textContent = json.name ?? editProfileForm.name.value;
       profileDescription.textContent =
@@ -160,8 +136,7 @@ function addCard(event) {
     name: newCardForm["place-name"].value,
     link: newCardForm.link.value,
   };
-  apiService
-    .post("cards", newCard)
+  apiService.addCard(newCard)
     .then((json) => {
       newCardForm.reset();
       validationService.setButtonOff(newCardForm.querySelector("button"));
@@ -187,15 +162,6 @@ function deleteCardFunc(card, cardId) {
   confirmationMethod = () => deleteCard(card, cardId, apiService);
 }
 
-function loadProfile() {
-  apiService.get("users/me").then((json) => {
-    profileTitle.textContent = json.name;
-    profileDescription.textContent = json.about;
-    profileAvatar.style.backgroundImage = `url(${json.avatar})`;
-    profileId = json._id;
-  });
-}
-
 function openEditAvatarPopup() {
   avatarEditForm.link.value = profileAvatar.style.backgroundImage.slice(5, -2);
   validationService.clearErrors(avatarEditForm);
@@ -210,7 +176,7 @@ function editAvatar(event) {
     .checkImageLink(avatarEditForm.link.value)
     .then(() => apiService.sendAvatar(avatarEditForm.link.value))
     .then((res) => {
-      return loadProfile();
+      profileAvatar.style.backgroundImage = `url(${avatarEditForm.link.value})`;
     })
     .then(() => closeModal(avatarPopup))
     .catch((err) => {
@@ -229,5 +195,15 @@ function closeConfirmationPopup() {
   closeModal(confirmationPopup);
 }
 
-loadProfile();
-loadCards();
+Promise.all([apiService.getProfile(), apiService.getCards()])
+.then((response) => {
+  const profile = response[0];
+  const cards = response[1];
+  profileTitle.textContent = profile.name;
+  profileDescription.textContent = profile.about;
+  profileAvatar.style.backgroundImage = `url(${profile.avatar})`;
+  profileId = profile._id
+  const mappedCards = cards.map((card) => createCard(cardTemplate, card, deleteCardFunc, showCard, likeCard, profileId, apiService));
+  updateCardList(mappedCards);
+})
+.catch((err) => console.error(err));
