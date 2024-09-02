@@ -6,7 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // module.exports — это синтаксис экспорта в Node.js
 module.exports = {
     entry: { main: './src/scripts/index.js' }, // Точка входа
-    output: { // указали, в какой файл будет собираться весь js, и дали ему имя 
+    output: { // указали, в какой файл будет собираться весь js, и дали ему имя
         path: path.resolve(__dirname, 'dist'),
         filename: 'main.js',
         publicPath: ''
@@ -30,9 +30,20 @@ module.exports = {
                 exclude: '/node_modules/'
             },
             {
-                // регулярное выражение, которое ищет все файлы с такими расширениями
-                test: /\.(png|svg|jpg|gif|woff(2)?|eot|ttf|otf)$/,
-                type: 'asset/resource'
+                // регулярное выражение, которое ищет все изображения и помещает их в определенную папку
+                test: /\.(png|svg|jpg|gif)$/,
+                type: 'asset/resource',
+                generator: {
+                    filename:'images/[name].[hash][ext]'
+                }
+            },
+            {
+                // регулярное выражение, которое ищет все шрифты и помещает их в определенную папку
+                test: /\.(woff(2)?|eot|ttf|otf)$/,
+                type: 'asset/resource',
+                generator: {
+                    filename:'fonts/[name].[hash][ext]'
+                }
             },
             {
                 // применять это правило только к CSS-файлам

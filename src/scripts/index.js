@@ -126,6 +126,13 @@ function openEditProfilePopup() {
 
 function openNewCardPopup() {
   openModal(newCardPopup);
+  if (!newCardForm["place-name"].value || !newCardForm.link.value) {
+    validationService.clearErrors(newCardForm);
+  }
+}
+
+function closeNewCardPopup() {
+  closeModal(newCardPopup);
 }
 
 function addCard(event) {
@@ -139,22 +146,12 @@ function addCard(event) {
   apiService.addCard(newCard)
     .then((json) => {
       newCardForm.reset();
-      validationService.setButtonOff(newCardForm.querySelector("button"));
-      closeModal(newCardPopup);
-      const createdCard = createCard(
-        cardTemplate,
-        json,
-        deleteCardFunc,
-        showCard,
-        likeCard,
-        profileId,
-        apiService
-      );
+      closeNewCardPopup();
+      const createdCard = createCard(cardTemplate, json, deleteCardFunc, showCard, likeCard, profileId, apiService);
       placesList.prepend(createdCard);
     })
-    .finally(() => {
-      changeButtonText(btn, txt);
-    });
+    .catch((err) => console.error(err))
+    .finally(() => changeButtonText(btn, txt));
 }
 
 function deleteCardFunc(card, cardId) {
@@ -163,8 +160,8 @@ function deleteCardFunc(card, cardId) {
 }
 
 function openEditAvatarPopup() {
-  avatarEditForm.link.value = profileAvatar.style.backgroundImage.slice(5, -2);
   validationService.clearErrors(avatarEditForm);
+  avatarEditForm.link.value = profileAvatar.style.backgroundImage.slice(5, -2);
   openModal(avatarPopup);
 }
 
@@ -175,10 +172,10 @@ function editAvatar(event) {
   apiService
     .checkImageLink(avatarEditForm.link.value)
     .then(() => apiService.sendAvatar(avatarEditForm.link.value))
-    .then((res) => {
+    .then(() => {
       profileAvatar.style.backgroundImage = `url(${avatarEditForm.link.value})`;
+      closeModal(avatarPopup);
     })
-    .then(() => closeModal(avatarPopup))
     .catch((err) => {
       validationService.showError(avatarEditForm.link, err);
     })
@@ -196,9 +193,7 @@ function closeConfirmationPopup() {
 }
 
 Promise.all([apiService.getProfile(), apiService.getCards()])
-.then((response) => {
-  const profile = response[0];
-  const cards = response[1];
+.then(([profile, cards]) => {
   profileTitle.textContent = profile.name;
   profileDescription.textContent = profile.about;
   profileAvatar.style.backgroundImage = `url(${profile.avatar})`;

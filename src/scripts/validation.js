@@ -66,10 +66,12 @@ export class ValidationService {
 
   setButtonOff(button) {
     button.classList.add(this.inactiveButtonClass);
+    button.setAttribute('disabled', true);
   }
 
   setButtonOn(button) {
     button.classList.remove(this.inactiveButtonClass);
+    button.removeAttribute('disabled');
   }
 
   subscribeInputElement(element, validationMethod, inputList, button) {
@@ -83,8 +85,10 @@ export class ValidationService {
   }
 
   clearErrors(form) {
+    form.reset();
     form.querySelectorAll(this.inputSelector).forEach((x) => {
       this.hideError(x);
     });
+    this.setButtonOff(form.querySelector('.popup__button'));
   }
 }

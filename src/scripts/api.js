@@ -18,14 +18,8 @@ export class ApiService {
       headers: this.headers,
     })
       .then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-        return Promise.reject(`Ответ сервера ${res.status}`);
+        return this.handleResponse(res);
       })
-      .catch((err) =>
-        console.error(`Ошибка выполнения базового запроса GET: ${err}`)
-      );
   }
 
   path(address, object) {
@@ -35,13 +29,8 @@ export class ApiService {
       body: JSON.stringify(object),
     })
       .then((res) => {
-        console.info(res);
-        if (res.ok) {
-          return res.json();
-        }
-        return Promise.reject(`Ответ сервера ${res.status}`);
+        return this.handleResponse(res);
       })
-      .catch((err) => Promise.reject(`Ошибка выполнения базового запроса PATCH: ${err}`));
   }
 
   post(address, object) {
@@ -51,14 +40,8 @@ export class ApiService {
       body: JSON.stringify(object),
     })
       .then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-        return Promise.reject(`Ответ сервера ${res.status}`);
+        return this.handleResponse(res);
       })
-      .catch((err) => {
-        return Promise.reject(`Ошибка выполнения базового запроса POST: ${err}`);
-      });
   }
 
   put(address) {
@@ -69,15 +52,8 @@ export class ApiService {
       },
     })
       .then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-        log.error(`Ответ сервера ${res.status}`);
-        return Promise.reject();
+        return this.handleResponse(res);
       })
-      .catch((err) => {
-        return Promise.reject(`Ошибка выполнения put`);
-      });
   }
 
   delete(address) {
@@ -88,14 +64,8 @@ export class ApiService {
       },
     })
       .then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-        return Promise.reject(`Ответ сервера ${res.status}`);
+        return this.handleResponse(res);
       })
-      .catch((err) => {
-        return Promise.reject("Ошибка при выполнении запроса DELETE: " + err);
-      });
   }
 //#endregion base Functions
 
@@ -113,7 +83,6 @@ export class ApiService {
   addCard(card) {
     return this.post('cards', card);
   }
-
 
   getCards() {
     return this.get("cards");
@@ -144,10 +113,6 @@ export class ApiService {
         }
         return Promise.reject();
       })
-      .catch((err) => {
-        console.log(`Ошибка при проверке ссылки на изображение: ${err}`);
-        return Promise.reject(`Ошибка при проверке ссылки на изображение`);
-      });
   }
 
   sendAvatar(url) {
@@ -155,5 +120,9 @@ export class ApiService {
       avatar: url,
     };
     return this.path('users/me/avatar', {avatar: url});
+  }
+
+  handleResponse(response) {
+    return response.ok ? response.json() : Promise.reject(`Ошибка отправки запроса: ${response.status}`)
   }
 }
